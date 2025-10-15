@@ -20,13 +20,22 @@
           "main": "apps/sharnom-api/src/main.ts",
           "tsConfig": "apps/sharnom-api/tsconfig.app.json",
           "assets": [
-            "apps/sharnom-api/src/assets"
+            "apps/sharnom-api/src/assets",
+            {
+              "glob": "**/*",
+              "input": "apps/sharnom-api/prisma",
+              "output": "prisma"
+            }
           ],
           "esbuildOptions": {
             "sourcemap": true,
             "outExtension": {
               ".js": ".js"
-            }
+            },
+            "external": [
+              "@prisma/client",
+              ".prisma/client"
+            ]
           }
         },
         "configurations": {
@@ -36,7 +45,11 @@
               "sourcemap": false,
               "outExtension": {
                 ".js": ".js"
-              }
+              },
+              "external": [
+                "@prisma/client",
+                ".prisma/client"
+              ]
             }
           }
         }
