@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from './generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { YellowBookEntrySchema } from '@sharnom/contracts';
 
 const host = process.env.HOST ?? 'localhost';
@@ -8,6 +8,25 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 const prisma = new PrismaClient();
+
+// Type for Prisma YellowBookEntry
+type PrismaEntry = {
+  id: string;
+  name: string;
+  description: string | null;
+  address: string;
+  phone: string;
+  website: string | null;
+  email: string | null;
+  category: string;
+  latitude: number;
+  longitude: number;
+  rating: number | null;
+  employees: string | null;
+  founded: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 // Middleware
 app.use(cors());
@@ -33,7 +52,7 @@ app.get('/yellow-books', async (req, res) => {
     });
 
     // Convert to match schema
-    const validatedEntries = entries.map((entry) => ({
+    const validatedEntries = entries.map((entry: PrismaEntry) => ({
       id: entry.id,
       name: entry.name,
       description: entry.description || undefined,
