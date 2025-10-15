@@ -2,12 +2,30 @@
   "name": "@sharnom/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev:api": "nx serve sharnom-api",
+    "dev:web": "nx serve sharnom-web",
+    "dev:api:direct": "cd apps/sharnom-api && npx tsx src/main.ts",
+    "dev:web:direct": "cd apps/sharnom-web && npx next dev -p 4200",
+    "build": "nx run-many -t build",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "migrate": "cd apps/sharnom-api && npx prisma migrate dev",
+    "seed": "cd apps/sharnom-api && npx tsx prisma/seed.ts"
+  },
   "private": true,
   "dependencies": {
+    "@prisma/client": "^6.17.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "next": "~15.2.4",
+    "prisma": "^6.17.1",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/compat": "^1.1.1",
@@ -15,18 +33,23 @@
     "@eslint/js": "^9.8.0",
     "@next/eslint-plugin-next": "^15.2.4",
     "@nx/cypress": "21.6.4",
+    "@nx/esbuild": "21.6.4",
     "@nx/eslint": "21.6.4",
     "@nx/eslint-plugin": "21.6.4",
     "@nx/jest": "21.6.4",
     "@nx/js": "21.6.4",
     "@nx/next": "21.6.4",
+    "@nx/node": "^21.6.4",
     "@nx/workspace": "21.6.4",
     "@swc-node/register": "~1.9.1",
     "@swc/cli": "~0.6.0",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
+    "@swc/jest": "~0.2.38",
     "@testing-library/dom": "10.4.0",
     "@testing-library/react": "16.1.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
     "@types/jest": "^30.0.0",
     "@types/node": "20.19.9",
     "@types/react": "19.0.0",
@@ -34,6 +57,7 @@
     "autoprefixer": "10.4.13",
     "babel-jest": "^30.0.2",
     "cypress": "^14.2.1",
+    "esbuild": "^0.19.2",
     "eslint": "^9.8.0",
     "eslint-config-next": "^15.2.4",
     "eslint-config-prettier": "^10.0.0",
@@ -44,7 +68,9 @@
     "eslint-plugin-react-hooks": "5.0.0",
     "jest": "^30.0.2",
     "jest-environment-jsdom": "^30.0.2",
+    "jest-environment-node": "^30.0.2",
     "jest-util": "^30.0.2",
+    "jsonc-eslint-parser": "^2.1.0",
     "nx": "21.6.4",
     "postcss": "8.4.38",
     "prettier": "^2.6.2",
@@ -52,10 +78,12 @@
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
+    "tsx": "^4.20.6",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0"
   },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "libs/*"
   ]
 }

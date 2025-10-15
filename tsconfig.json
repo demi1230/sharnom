@@ -8,6 +8,15 @@
     },
     {
       "path": "./apps/sharnom-web"
+    },
+    {
+      "path": "./apps/sharnom-api"
+    },
+    {
+      "path": "./libs/contracts"
+    },
+    {
+      "path": "./libs/config"
     }
   ]
 }

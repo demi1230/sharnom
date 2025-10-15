@@ -1,53 +1,194 @@
-# Sharnom
+# Yellowbook - Бизнесийн Лавлах
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+![Nx](https://img.shields.io/badge/nx-monorepo-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![Prisma](https://img.shields.io/badge/Prisma-SQLite-green)
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+Nx monorepo, Next.js, Express, болон Prisma ашиглан бүтээсэн орчин үеийн Yellowbook (бизнесийн лавлах) веб аппликейшн.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 🏗️ Төслийн Бүтэц
 
-## Finish your CI setup
+Энэхүү workspace нь Nx monorepo-ийн шилдэг практикуудыг дагаж мөрддөг:
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/OSBCUfrJ2a)
-
-
-## Run tasks
-
-To run the dev server for your app, use:
-
-```sh
-npx nx dev sharnom-web
+```
+sharnom/
+├── apps/
+│   ├── sharnom-api/        # Express API backend
+│   ├── sharnom-web/        # Next.js frontend
+│   └── sharnom-web-e2e/    # Cypress E2E tests
+├── libs/
+│   ├── contracts/          # Shared schemas (Zod)
+│   └── config/             # Shared configuration
 ```
 
-To create a production bundle:
+## 🎯 Боломжууд
 
-```sh
+- ✅ **Nx Monorepo**: Сайн зохион байгуулалттай apps болон libs
+- ✅ **Төрлийн аюулгүйContract**: API болон Web-д хамтран ашигладаг Zod schema
+- ✅ **Prisma ORM**: Migration бүхий SQLite өгөгдлийн сан
+- ✅ **Seed өгөгдөл**: 7 компанийн мэдээлэл
+- ✅ **REST API**: Баталгаажуулалт бүхий Express endpoints
+- ✅ **Next.js 15**: App Router бүхий орчин үеийн React
+- ✅ **Responsive UI**: Tailwind CSS загвар
+- ✅ **CORS болон Security Headers**: бэлэн API
+
+## 🚀 Quick start
+ 
+### Шаардлагатай зүйлс
+
+- Node.js 20+ болон npm
+- Git
+
+### Суулгалт
+
+```bash
+# Repository-г clone хийх
+git clone <your-repo-url>
+cd sharnom
+
+# Dependencies суулгах
+npm install
+
+# Өгөгдлийн сан болон seed өгөгдөл тохируулах
+cd apps/sharnom-api
+npx prisma migrate dev
+npx tsx prisma/seed.ts
+cd ../..
+```
+
+### Хөгжүүлэлт
+
+API болон Web-ийг зэрэг ажиллуулах:
+
+```bash
+# Terminal 1: Start API (port 3000)
+npx nx serve sharnom-api
+
+# Terminal 2: Start Web (port 4200)
+npx nx serve sharnom-web
+```
+
+**Өөр арга (хэрэв Nx удаан бол):**
+
+```bash
+# Terminal 1: API-г шууд ажиллуулах
+npm run dev:api:direct
+# эсвэл: cd apps/sharnom-api && npx tsx src/main.ts
+
+# Terminal 2: Web-ийг шууд ажиллуулах
+npm run dev:web:direct
+# эсвэл: cd apps/sharnom-web && npx next dev -p 4200
+```
+
+Дараа нь browser дээрээ http://localhost:4200 хаягийг нээнэ.
+
+## 📋 API Endpoints
+
+- `GET /yellow-books` - Бүх бизнесийн жагсаалт
+- `GET /yellow-books/:id` - Бизнесийн дэлгэрэнгүй мэдээлэл
+- `POST /yellow-books` - Шинэ бизнес үүсгэх (Zod баталгаажуулалттай)
+
+## 🎨 Дизайны Сонголтууд
+
+### Архитектур
+
+1. **Nx-тэй Monorepo**: Аппликейшнүүдийн хооронд код хуваалцах болон нэгдсэн хэрэгслүүд ашиглах боломжтой
+2. **Contract эхэндээ**: `libs/contracts` дахь Zod schema нь frontend болон backend хооронд төрлийн аюулгүй байдлыг баталгаажуулна
+3. **SQLite**: Энгийн, файл дээр суурилсан өгөгдлийн сан, хөгжүүлэлт болон демо зориулалтад тохиромжтой
+
+### Schema Дизайн
+
+`YellowBookEntrySchema` дараахыг агуулна:
+- Үндсэн мэдээлэл: нэр, тайлбар, хаяг, утас
+- Холбоо барих: имэйл, вэбсайт
+- Байршил: өргөрөг, уртраг (газрын зураг холбоход)
+- Мета өгөгдөл: ангилал, үнэлгээ, ажилчдын тоо, байгуулагдсан он
+- Цагийн тэмдэг: үүсгэсэн огноо, шинэчилсэн огноо
+
+### API Дизайн
+
+- Шилдэг практикуудыг дагасан RESTful endpoints
+- POST хүсэлт дээр Zod баталгаажуулалт (буруу өгөгдөл дээр 400 алдаа)
+- Локал хөгжүүлэлтэд CORS идэвхжүүлсэн
+- Аюулгүй байдлын headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection)
+
+### Frontend Дизайн
+
+- Оновчтой ажиллагааны тулд Server Components
+- Responsive grid layout (дэлгэцийн хэмжээнээс хамааран 1/2/3 багана)
+- Хүртээмжтэй markup (semantic HTML, alt текстүүд, ARIA landmarks)
+- Газрын зураг бүхий дэлгэрэнгүй хуудас (Leaflet/Google Maps холбоход бэлэн)
+
+## 🧪 Тестлэх болон Linting
+
+```bash
+# Linter ажиллуулах
+npx nx lint sharnom-api
+npx nx lint sharnom-web
+
+# Төрөл шалгах
+npx nx run sharnom-api:tsc
+npx nx run sharnom-web:tsc
+
+# Тестүүд ажиллуулах
+npx nx test sharnom-api
+npx nx test sharnom-web
+
+# E2E тестүүд
+npx nx e2e sharnom-web-e2e
+```
+
+## 🔄 CI/CD
+
+Төсөл нь Nx affected командуудтай CI-д тохируулагдсан:
+
+```bash
+# Зөвхөн өөрчлөгдсөн төслүүдийг build хийх
+npx nx affected --target=build
+
+# Зөвхөн өөрчлөгдсөн төслүүдийг тестлэх
+npx nx affected --target=test
+
+# Зөвхөн өөрчлөгдсөн төслүүдийг lint хийх
+npx nx affected --target=lint
+```
+
+## 📦 Үйлдвэрлэлийн Build
+
+```bash
+# API build хийх
+npx nx build sharnom-api
+
+# Web build хийх
 npx nx build sharnom-web
 ```
 
-To see all available targets to run for a project, run:
+## 🛠️ Технологиуд
 
-```sh
-npx nx show project sharnom-web
-```
+- **Nx 21**: Monorepo хэрэгсэл
+- **Next.js 15**: App Router бүхий React framework
+- **Express 4**: Node.js web framework
+- **Prisma 6**: Орчин үеийн ORM
+- **Zod 4**: Schema баталгаажуулалт
+- **TypeScript 5**: Төрлийн аюулгүй байдал
+- **Tailwind CSS 3**: Utility-first CSS
+- **ESLint & Prettier**: Кодын чанар
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## 📝 Тэмдэглэл
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- Өгөгдлийн сангийн файл `apps/sharnom-api/prisma/dev.db` хаягт хадгалагдана
+- Seed өгөгдөл нь Улаанбаатарын координаттай 7 Монголын компанийг агуулна
+- Газрын зургийн интеграци нь placeholder - Leaflet эсвэл Google Maps-аар солих боломжтой
+- Бүх текстүүд Монгол үсэг (Кирилл)-г дэмждэг
 
-## Add new projects
+## 👨‍💻 Зохиогч
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+Вэб Хөгжүүлэлтийн хичээлийн лабораторийн даалгаврын нэг хэсэг болгон бүтээгдсэн.
 
-Use the plugin's generator to create new projects.
+## 📄 Лиценз
 
-To generate a new application, use:
+MIT
 
-```sh
-npx nx g @nx/next:app demo
-```
-
-To generate a new library, use:
 
 ```sh
 npx nx g @nx/react:lib mylib
