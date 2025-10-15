@@ -4,9 +4,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/sharnom-web-e2e"
-    },
-    {
       "path": "./apps/sharnom-web"
     },
     {

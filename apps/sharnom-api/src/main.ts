@@ -4,7 +4,7 @@ import { PrismaClient } from './generated/prisma';
 import { YellowBookEntrySchema } from '@sharnom/contracts';
 
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3001;
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 const prisma = new PrismaClient();
