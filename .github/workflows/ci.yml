@@ -33,10 +33,11 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
-      - run: npx nx run-many -t lint test build typecheck
+      - run: npx nx run-many -t lint test build typecheck --skip-nx-cache
         env:
-          NX_CLOUD_ACCESS_TOKEN: ''
+          NX_CLOUD_DISTRIBUTED_EXECUTION: 'false'
+          NX_CLOUD_NO_TIMEOUTS: 'false'
       - run: npx nx fix-ci
         if: always()
         env:
-          NX_CLOUD_ACCESS_TOKEN: ''
+          NX_CLOUD_DISTRIBUTED_EXECUTION: 'false'
