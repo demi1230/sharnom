@@ -36,9 +36,12 @@ jobs:
       - name: Build, Test, Lint
         env:
           NX_CLOUD_DISTRIBUTED_EXECUTION: 'false'
+          NEXT_PUBLIC_API_URL: 'http://localhost:3000'
+          REVALIDATION_SECRET: 'yellowbook-secret-token-2025'
         run: |
           npx nx run-many -t lint test build typecheck --skip-nx-cache
-      - run: npx nx fix-ci
+          
+      - run: npx nx fix-ci --skip-nx-cache
         if: always()
         env:
           NX_CLOUD_DISTRIBUTED_EXECUTION: 'false'
