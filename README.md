@@ -1,223 +1,191 @@
-# Yellowbook - Бизнесийн Лавлах
+# Sharnom - Mongolian Yellow Book Directory
 
-![Nx](https://img.shields.io/badge/nx-monorepo-blue)
-![Next.js](https://img.shields.io/badge/Next.js-15-black)
-![Prisma](https://img.shields.io/badge/Prisma-SQLite-green)
+Yellowbook-style business directory application built with Nx monorepo, Next.js, Express, and Prisma.
 
-Nx monorepo, Next.js, Express, болон Prisma ашиглан бүтээсэн орчин үеийн Yellowbook (бизнесийн лавлах) веб аппликейшн.
+## 🏗️ Architecture
 
-## 🏗️ Төслийн Бүтэц
-
-Энэхүү workspace нь Nx monorepo-ийн шилдэг практикуудыг дагаж мөрддөг:
-
+### Monorepo Structure
 ```
 sharnom/
 ├── apps/
-│   ├── sharnom-api/        # Express API backend
-│   ├── sharnom-web/        # Next.js frontend
-│   └── sharnom-web-e2e/    # Cypress E2E tests
-├── libs/
-│   ├── contracts/          # Shared schemas (Zod)
-│   └── config/             # Shared configuration
+│   ├── sharnom-api/     # Express API + Prisma + SQLite
+│   └── sharnom-web/     # Next.js 15 frontend
+└── libs/
+    ├── contracts/       # Shared Zod schemas & TypeScript types
+    └── config/          # Shared configuration
 ```
 
-## 🎯 Боломжууд
+### Tech Stack
+- **Monorepo**: Nx 21
+- **Frontend**: Next.js 15, React 19, TailwindCSS
+- **Backend**: Express, Prisma 6, SQLite
+- **Contracts**: Zod schemas for validation & type inference
+- **CI/CD**: GitHub Actions
 
-- ✅ **Nx Monorepo**: Сайн зохион байгуулалттай apps болон libs
-- ✅ **Төрлийн аюулгүйContract**: API болон Web-д хамтран ашигладаг Zod schema
-- ✅ **Prisma ORM**: Migration бүхий SQLite өгөгдлийн сан
-- ✅ **Seed өгөгдөл**: 7 компанийн мэдээлэл
-- ✅ **REST API**: Баталгаажуулалт бүхий Express endpoints
-- ✅ **Next.js 15**: App Router бүхий орчин үеийн React
-- ✅ **Responsive UI**: Tailwind CSS загвар
-- ✅ **CORS болон Security Headers**: бэлэн API
+### Key Design Decisions
 
-## 🚀 Quick start
- 
-### Шаардлагатай зүйлс
+1. **Shared Contracts Library** (`libs/contracts`)
+   - Single source of truth for data models
+   - Zod schema provides runtime validation (API) + TypeScript types (Web)
+   - Prevents type drift between frontend/backend
 
-- Node.js 20+ болон npm
-- Git
+2. **Next.js Rendering Strategies**
+   - **ISR (Incremental Static Regeneration)**: Homepage (60s revalidation)
+   - **SSG (Static Site Generation)**: Detail pages with `generateStaticParams()`
+   - **SSR (Server-Side Rendering)**: Search page with `dynamic='force-dynamic'`
+   - On-demand revalidation API at `/api/revalidate`
 
-### Суулгалт
+3. **Error Handling**
+   - 7-second fetch timeout prevents UI hanging when API is down
+   - Graceful fallbacks in all async components
+   - Friendly error messages in Mongolian
 
+4. **Performance Optimizations**
+   - ISR caching reduces API load
+   - SSG pre-renders detail pages at build time
+   - Suspense boundaries for progressive loading
+   - Documented in `perf.md`
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 20+
+- npm or yarn
+
+### Installation
 ```bash
-# Repository-г clone хийх
-git clone <your-repo-url>
-cd sharnom
-
-# Dependencies суулгах
-npm install
-
-# Өгөгдлийн сан болон seed өгөгдөл тохируулах
-cd apps/sharnom-api
-npx prisma migrate dev
-npx tsx prisma/seed.ts
-cd ../..
+npm install --legacy-peer-deps
 ```
 
-### Хөгжүүлэлт
+### Environment Setup
+Create `apps/sharnom-web/.env.local`:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+REVALIDATION_SECRET=yellowbook-secret-token-2025
+```
 
-API болон Web-ийг зэрэг ажиллуулах:
-
+### Database Setup
 ```bash
-# Terminal 1: Start API (port 3000)
+# Generate Prisma client
+npx prisma generate --schema=apps/sharnom-api/prisma/schema.prisma
+
+# Run migrations
+npx prisma migrate deploy --schema=apps/sharnom-api/prisma/schema.prisma
+
+# Seed database (7 Mongolian businesses)
+npx prisma db seed
+```
+
+### Development
+
+**Terminal 1 - Start API:**
+```bash
 npx nx serve sharnom-api
-
-# Terminal 2: Start Web (port 4200)
-npx nx serve sharnom-web
+# Runs on http://localhost:3000
 ```
 
-**Өөр арга (хэрэв Nx удаан бол):**
-
+**Terminal 2 - Start Web:**
 ```bash
-# Terminal 1: API-г шууд ажиллуулах
-npm run dev:api:direct
-# эсвэл: cd apps/sharnom-api && npx tsx src/main.ts
-
-# Terminal 2: Web-ийг шууд ажиллуулах
-npm run dev:web:direct
-# эсвэл: cd apps/sharnom-web && npx next dev -p 4200
+npx nx dev sharnom-web
+# Runs on http://localhost:4200
 ```
 
-Дараа нь browser дээрээ http://localhost:4200 хаягийг нээнэ.
-
-## 📋 API Endpoints
-
-- `GET /yellow-books` - Бүх бизнесийн жагсаалт
-- `GET /yellow-books/:id` - Бизнесийн дэлгэрэнгүй мэдээлэл
-
-
-## 🎨 Дизайны Сонголтууд
-
-### Архитектур
-
-1. **Nx-тэй Monorepo**: Аппликейшнүүдийн хооронд код хуваалцах болон нэгдсэн хэрэгслүүд ашиглах боломжтой
-2. **Contract эхэндээ**: `libs/contracts` дахь Zod schema нь frontend болон backend хооронд төрлийн аюулгүй байдлыг баталгаажуулна
-3. **SQLite**: Энгийн, файл дээр суурилсан өгөгдлийн сан, хөгжүүлэлт болон демо зориулалтад тохиромжтой
-
-### Schema Дизайн
-
-`YellowBookEntrySchema` дараахыг агуулна:
-- Үндсэн мэдээлэл: нэр, тайлбар, хаяг, утас
-- Холбоо барих: имэйл, вэбсайт
-- Байршил: өргөрөг, уртраг (газрын зураг холбоход)
-- Мета өгөгдөл: ангилал, үнэлгээ, ажилчдын тоо, байгуулагдсан он
-- Цагийн тэмдэг: үүсгэсэн огноо, шинэчилсэн огноо
-
-### API Дизайн
-
-- RESTful endpoints
-- POST хүсэлт дээр Zod баталгаажуулалт (буруу өгөгдөл дээр 400 алдаа)
-- Локал хөгжүүлэлтэд CORS идэвхжүүлсэн
-- Аюулгүй байдлын headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection)
-
-### Frontend Дизайн
-
-- Оновчтой ажиллагааны тулд Server Components
-- Responsive grid layout (дэлгэцийн хэмжээнээс хамааран 1/2/3 багана)
-- Хүртээмжтэй markup (semantic HTML, alt текстүүд, ARIA landmarks)
-- Газрын зураг бүхий дэлгэрэнгүй хуудас (Leaflet/Google Maps холбоход бэлэн)
-
-## 🧪 Тестлэх болон Linting
-
+### Testing & Linting
 ```bash
-# Linter ажиллуулах
-npx nx lint sharnom-api
-npx nx lint sharnom-web
+# Run all tests
+npx nx run-many -t test
 
-# Төрөл шалгах
-npx nx run sharnom-api:tsc
-npx nx run sharnom-web:tsc
+# Run all linting
+npx nx run-many -t lint
 
-# Тестүүд ажиллуулах
-npx nx test sharnom-api
-npx nx test sharnom-web
+# Build all projects
+npx nx run-many -t build
 
-# E2E тестүүд
-npx nx e2e sharnom-web-e2e
+# Type check
+npx nx run-many -t typecheck
 ```
 
-## 🔄 CI/CD
+## 📁 Project Structure
 
-Nx affected командуудтай CI-д тохируулагдсан:
+### API (`apps/sharnom-api`)
+- **Endpoints**:
+  - `GET /yellow-books` - List all entries (with optional `?search=query`)
+  - `GET /yellow-books/:id` - Get single entry
+  - `POST /yellow-books` - Create entry (Zod validation)
+- **Database**: SQLite with Prisma ORM
+- **Seed Data**: 7 realistic Mongolian businesses (Хаан Банк, Номин, etc.)
 
-```bash
-# Зөвхөн өөрчлөгдсөн төслүүдийг build хийх
-npx nx affected --target=build
+### Web (`apps/sharnom-web`)
+- **Routes**:
+  - `/` - Homepage with hero search (ISR, 60s)
+  - `/yellow-books/search?q=query` - Search results (SSR)
+  - `/yellow-books/[id]` - Business detail page (SSG)
+  - `/api/revalidate` - On-demand cache invalidation
+- **Features**:
+  - Responsive design with TailwindCSS
+  - OpenStreetMap integration
+  - Skeleton loading states
+  - Mongolian UI text
 
-# Зөвхөн өөрчлөгдсөн төслүүдийг тестлэх
-npx nx affected --target=test
+### Contracts (`libs/contracts`)
+```typescript
+// Zod schema + TypeScript type
+export const YellowBookEntrySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  address: z.string(),
+  phone: z.string(),
+  category: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
+  // ... + optional fields
+});
 
-# Зөвхөн өөрчлөгдсөн төслүүдийг lint хийх
-npx nx affected --target=lint
+export type YellowBookEntry = z.infer<typeof YellowBookEntrySchema>;
 ```
 
-## 📦 Build
+## 🎨 UI Design
 
-```bash
-# API build хийх
-npx nx build sharnom-api
+Based on Mongolian business directory mockups:
+- Clean gradient backgrounds (white → orange-50)
+- Prominent search bar on homepage
+- Circular company logos
+- Two-column detail layout (info + map)
+- Sticky header with help/feedback buttons
+- Footer with contact info
 
-# Web build хийх
-npx nx build sharnom-web
-```
+## 🚦 CI/CD
 
-## 🛠️ Технологиуд
+GitHub Actions pipeline (`.github/workflows/ci.yml`):
+- ✅ ESLint all projects
+- ✅ Run all tests
+- ✅ Build all apps
+- ✅ TypeScript type check
+- ✅ Bypasses Nx Cloud with `--skip-nx-cache`
 
-- **Nx 21**: Monorepo хэрэгсэл
-- **Next.js 15**: App Router бүхий React framework
-- **Express 4**: Node.js web framework
-- **Prisma 6**: Орчин үеийн ORM
-- **Zod 4**: Schema баталгаажуулалт
-- **TypeScript 5**: Төрлийн аюулгүй байдал
-- **Tailwind CSS 3**: Utility-first CSS
-- **ESLint & Prettier**: Кодын чанар
+## 📊 Performance
 
-## 📝 Тэмдэглэл
+See `perf.md` for detailed metrics:
+- TTFB: <30ms (ISR/SSG)
+- LCP: <1200ms
+- Bundle size: 104 kB total
+- 7 pages pre-rendered at build time
 
-- Өгөгдлийн сангийн файл `apps/sharnom-api/prisma/dev.db` хаягт хадгалагдана
-- Seed өгөгдөл нь Улаанбаатарын координаттай 7 Монголын компанийг агуулна
-- Газрын зургийн интеграци нь placeholder - Leaflet эсвэл Google Maps-аар солих боломжтой
-- Бүх текстүүд Монгол үсэг (Кирилл)-г дэмждэг
+## 🔧 Troubleshooting
 
-## 👨‍💻 Зохиогч
+**API connection errors:**
+- Ensure API is running on port 3000
+- Check `NEXT_PUBLIC_API_URL` in `.env.local`
+- Verify database is seeded: `npx prisma db seed`
 
-Вэб Хөгжүүлэлтийн хичээлийн лабораторийн даалгаврын нэг хэсэг болгон бүтээгдсэн.
+**Build failures in CI:**
+- API must be running for `generateStaticParams()` to pre-render pages
+- Or: Pages fall back to on-demand generation if API unavailable
 
-## 📄 Лиценз
+**Prisma errors:**
+- Regenerate client: `npx prisma generate --schema=apps/sharnom-api/prisma/schema.prisma`
+- Check SQLite file exists: `apps/sharnom-api/prisma/dev.db`
 
-MIT
+## 📝 License
 
-
-```sh
-npx nx g @nx/react:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Private educational project.
