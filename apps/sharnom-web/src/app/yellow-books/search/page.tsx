@@ -72,15 +72,7 @@ export default async function SearchPage({
   const { q = '' } = await searchParams;
 
   return (
-    <main className="min-h-screen bg-white">
-      <header className="bg-yellow-400 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <Link href="/">
-            <h1 className="text-3xl font-bold text-gray-900 cursor-pointer hover:text-gray-700">Yellowbook</h1>
-          </Link>
-        </div>
-      </header>
-
+    <main>
       <section className="py-12">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Хайлтын үр дүн</h2>
@@ -110,25 +102,6 @@ export default async function SearchPage({
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-8 mt-16">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div><h3 className="font-bold mb-2">Help</h3></div>
-            <div>
-              <h3 className="font-bold mb-2">Contact</h3>
-              <p className="text-sm text-gray-400">утас: +976/77884433</p>
-              <p className="text-sm text-gray-400">mail: example@teach.com</p>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2">Follow us:</h3>
-              <div className="flex gap-4">
-                <a href="#" className="text-gray-400 hover:text-white">IG</a>
-                <a href="#" className="text-gray-400 hover:text-white">FB</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

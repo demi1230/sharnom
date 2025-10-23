@@ -44,10 +44,25 @@ app.get('/', (req, res) => {
   res.send({ message: 'Yellowbook API' });
 });
 
-// GET /yellow-books - List all entries
+// GET /yellow-books - List all entries (with optional search)
 app.get('/yellow-books', async (req, res) => {
   try {
+    const search = req.query.search as string | undefined;
+    
+    // Build where clause for search (SQLite case-insensitive via LIKE)
+    const whereClause = search
+      ? {
+          OR: [
+            { name: { contains: search } },
+            { description: { contains: search } },
+            { category: { contains: search } },
+            { address: { contains: search } },
+          ],
+        }
+      : undefined;
+
     const entries = await prisma.yellowBookEntry.findMany({
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
     });
 
