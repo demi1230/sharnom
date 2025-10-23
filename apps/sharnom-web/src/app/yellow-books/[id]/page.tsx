@@ -5,10 +5,17 @@ import { YellowBookEntry } from '@sharnom/contracts';
 
 // Generate static paths for all yellow book entries at build time
 export async function generateStaticParams() {
-  const entries: YellowBookEntry[] = await getYellowBooks();
-  return entries.map((entry) => ({
-    id: entry.id,
-  }));
+  try {
+    const entries: YellowBookEntry[] = await getYellowBooks();
+    return entries.map((entry) => ({
+      id: entry.id,
+    }));
+  } catch (error) {
+    console.warn('Failed to fetch yellow books for generateStaticParams during build:', error);
+    // Return empty array if API is not available during build
+    // Pages will be generated on-demand instead
+    return [];
+  }
 }
 
 // Loading component for detail page
