@@ -22,24 +22,34 @@ function YellowBooksListSkeleton() {
 }
 
 async function YellowBooksList() {
-  const entries: YellowBookEntry[] = await getYellowBooks();
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {entries.map((entry) => (
-        <Link key={entry.id} href={`/yellow-books/${entry.id}`} className="block group">
-          <article className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all p-5">
-            <div className="flex flex-col items-center text-center">
-              <div className="bg-blue-600 rounded-2xl w-32 h-32 flex items-center justify-center mb-4">
-                <span className="text-white text-4xl font-bold">{entry.name.charAt(0)}</span>
+  try {
+    const entries: YellowBookEntry[] = await getYellowBooks();
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {entries.map((entry) => (
+          <Link key={entry.id} href={`/yellow-books/${entry.id}`} className="block group">
+            <article className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all p-5">
+              <div className="flex flex-col items-center text-center">
+                <div className="bg-blue-600 rounded-2xl w-32 h-32 flex items-center justify-center mb-4">
+                  <span className="text-white text-4xl font-bold">{entry.name.charAt(0)}</span>
+                </div>
+                <h4 className="font-bold text-xl text-gray-900 mb-2">{entry.name}</h4>
+                <p className="text-sm text-gray-600">{entry.description || entry.address}</p>
               </div>
-              <h4 className="font-bold text-xl text-gray-900 mb-2">{entry.name}</h4>
-              <p className="text-sm text-gray-600">{entry.description || entry.address}</p>
-            </div>
-          </article>
-        </Link>
-      ))}
-    </div>
-  );
+            </article>
+          </Link>
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.warn('Failed to fetch yellow books during build:', error);
+    // Return empty state when API is unavailable during build
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">Yellow books will be available at runtime.</p>
+      </div>
+    );
+  }
 }
 
 export default async function Index() {
