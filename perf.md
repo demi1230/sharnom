@@ -1,7 +1,5 @@
 # Performance Optimization Summary
 
-## What Changed
-
 ### 1. Homepage (/) - ISR (Incremental Static Regeneration)
 - **Before**: `cache: 'no-store'` (SSR on every request)
 - **After**: `revalidate: 60` (ISR with 60-second cache)
@@ -178,5 +176,5 @@ Use these tools to validate improvements:
 | **Caching** | 60s stale-while-revalidate | ♾️ until revalidated | ❌ None |
 | **Freshness** | 60s delay | On-demand | Real-time |
 | **Best For** | High traffic, infrequent updates | Static content | Dynamic queries |
-
+   
 **Overall Impact**: 60-90% improvement in perceived performance for majority of users visiting homepage and detail pages.

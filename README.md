@@ -1,5 +1,8 @@
 # Sharnom - Mongolian Yellow Book Directory
 
+![CI](https://github.com/demi1230/sharnom/actions/workflows/ci.yml/badge.svg)
+![Docker](https://github.com/demi1230/sharnom/actions/workflows/docker.yml/badge.svg)
+
 Yellowbook-style business directory application built with Nx monorepo, Next.js, Express, and Prisma.
 
 ## 🏗️ Architecture
@@ -78,6 +81,17 @@ npx prisma db seed
 
 ### Development
 
+**Option 1 - Docker (Recommended for production-like environment):**
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+
+# API: http://localhost:3000
+# Web: http://localhost:4200
+```
+
+**Option 2 - Local development:**
+
 **Terminal 1 - Start API:**
 ```bash
 npx nx serve sharnom-api
@@ -88,6 +102,27 @@ npx nx serve sharnom-api
 ```bash
 npx nx dev sharnom-web
 # Runs on http://localhost:4200
+npx nx run sharnom-web:dev --port=4200
+```
+
+### Docker Commands
+
+**Build individual images:**
+```bash
+# Build API image
+docker build -f apps/sharnom-api/Dockerfile -t sharnom-api:latest .
+
+# Build Web image
+docker build -f apps/sharnom-web/Dockerfile -t sharnom-web:latest .
+```
+
+**Run containers:**
+```bash
+# Run API
+docker run -p 3000:3000 sharnom-api:latest
+
+# Run Web (with API URL)
+docker run -p 4200:4200 -e NEXT_PUBLIC_API_URL=http://localhost:3000 sharnom-web:latest
 ```
 
 ### Testing & Linting
@@ -156,9 +191,58 @@ Based on Mongolian business directory mockups:
 
 ## 🚦 CI/CD
 
-GitHub Actions pipeline (`.github/workflows/ci.yml`):
+### GitHub Actions Pipelines
+
+**CI Pipeline** (`.github/workflows/ci.yml`):
 - ✅ ESLint all projects
 - ✅ Run all tests
+- ✅ Build all apps
+- ✅ TypeScript type check
+- ✅ Bypasses Nx Cloud with `--skip-nx-cache`
+
+**Docker Pipeline** (`.github/workflows/docker.yml`):
+- ✅ Matrix build for API + Web
+- ✅ Multi-stage Dockerfile optimization
+- ✅ Push to AWS ECR on push to master
+- ✅ Build validation on PRs
+- ✅ Health check reports
+- ✅ SHA-tagged images for traceability
+
+### AWS ECR Setup
+
+**Repositories:**
+- `sharnom-api` - Express API with Prisma + SQLite
+- `sharnom-web` - Next.js frontend
+
+**Required GitHub Secrets:**
+```
+AWS_ACCESS_KEY_ID       # Your AWS access key
+AWS_SECRET_ACCESS_KEY   # Your AWS secret key
+AWS_REGION             # e.g., us-east-1
+```
+
+**Create ECR Repositories:**
+```bash
+# Create API repository
+aws ecr create-repository \
+  --repository-name sharnom-api \
+  --region us-east-1
+
+# Create Web repository
+aws ecr create-repository \
+  --repository-name sharnom-web \
+  --region us-east-1
+```
+
+**Pull images from ECR:**
+```bash
+# Login to ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+
+# Pull images
+docker pull <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sharnom-api:latest
+docker pull <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sharnom-web:latest
+```
 - ✅ Build all apps
 - ✅ TypeScript type check
 - ✅ Bypasses Nx Cloud with `--skip-nx-cache`

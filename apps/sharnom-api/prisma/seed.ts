@@ -3,10 +3,8 @@ import { PrismaClient } from '../src/generated/prisma';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clear existing data
   await prisma.yellowBookEntry.deleteMany();
 
-  // Seed data - Mongolian companies with Ulaanbaatar coordinates
   const entries = [
     {
       name: 'Facebook',
