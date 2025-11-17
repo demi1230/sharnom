@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { searchYellowBooks } from '../../../lib/api';
 import { YellowBookEntry } from '@sharnom/contracts';
+import { SearchResultsMap } from '../../../components/SearchResultsMap';
 
 // Force SSR (Server-Side Rendering) - always fetch fresh data
 export const dynamic = 'force-dynamic';
@@ -44,22 +45,28 @@ async function SearchResults({ query }: { query: string }) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {entries.map((entry) => (
-        <Link key={entry.id} href={`/yellow-books/${entry.id}`} className="block group">
-          <article className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all p-5">
-            <div className="flex flex-col items-center text-center">
-              <div className="bg-blue-600 rounded-2xl w-32 h-32 flex items-center justify-center mb-4">
-                <span className="text-white text-4xl font-bold">{entry.name.charAt(0)}</span>
+    <>
+      {/* Client-side Interactive Map Island */}
+      <SearchResultsMap entries={entries} />
+
+      {/* Server-rendered Results Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {entries.map((entry) => (
+          <Link key={entry.id} href={`/yellow-books/${entry.id}`} className="block group">
+            <article className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all p-5">
+              <div className="flex flex-col items-center text-center">
+                <div className="bg-blue-600 rounded-2xl w-32 h-32 flex items-center justify-center mb-4">
+                  <span className="text-white text-4xl font-bold">{entry.name.charAt(0)}</span>
+                </div>
+                <h4 className="font-bold text-xl text-gray-900 mb-2">{entry.name}</h4>
+                <p className="text-sm text-gray-600 mb-2">{entry.description || entry.address}</p>
+                <span className="text-xs text-gray-500">{entry.category}</span>
               </div>
-              <h4 className="font-bold text-xl text-gray-900 mb-2">{entry.name}</h4>
-              <p className="text-sm text-gray-600 mb-2">{entry.description || entry.address}</p>
-              <span className="text-xs text-gray-500">{entry.category}</span>
-            </div>
-          </article>
-        </Link>
-      ))}
-    </div>
+            </article>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 }
 

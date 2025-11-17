@@ -25,8 +25,6 @@ jobs:
           - name: sharnom-web
             dockerfile: apps/sharnom-web/Dockerfile
             context: .
-            build-args: |
-              NEXT_PUBLIC_API_URL=${{ secrets.API_URL || 'http://localhost:3000' }}
     
     steps:
       - name: Checkout code
@@ -37,11 +35,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+          aws-region: eu-north-1
 
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -65,7 +63,8 @@ jobs:
           push: ${{ github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ matrix.service.build-args || '' }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://localhost:3000
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
