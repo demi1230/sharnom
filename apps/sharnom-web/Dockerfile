@@ -45,10 +45,11 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3000}
 
 # Sync Nx workspace before building
-RUN npx nx sync
+RUN NX_DAEMON=false npx nx sync
 
-# Build Next.js app
-RUN npx nx build sharnom-web --prod
+# Build Next.js app (disable daemon for Docker, enable verbose output)
+ENV NX_DAEMON=false
+RUN npx nx build sharnom-web --prod --verbose
 
 # Stage 3: Production
 FROM node:20-alpine AS runner

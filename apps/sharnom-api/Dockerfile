@@ -39,10 +39,11 @@ COPY --from=deps /app/libs ./libs
 COPY apps/sharnom-api ./apps/sharnom-api
 
 # Sync Nx workspace before building
-RUN npx nx sync
+RUN NX_DAEMON=false npx nx sync
 
-# Build the API
-RUN npx nx build sharnom-api --prod
+# Build the API (disable daemon for Docker)
+ENV NX_DAEMON=false
+RUN npx nx build sharnom-api --prod --verbose
 
 # Stage 3: Production
 FROM node:20-alpine AS runner
