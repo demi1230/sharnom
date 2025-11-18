@@ -17,13 +17,6 @@ spec:
   rules:
   - http:
       paths:
-      - path: /yellow-books
-        pathType: Prefix
-        backend:
-          service:
-            name: sharnom-api
-            port:
-              number: 3000
       - path: /
         pathType: Prefix
         backend:

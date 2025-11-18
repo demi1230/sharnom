@@ -26,7 +26,7 @@ jobs:
           - name: sharnom-web
             dockerfile: apps/sharnom-web/Dockerfile
             context: .
-            build-args: "NEXT_PUBLIC_API_URL=http://k8s-yellowbo-sharnomi-5041362fdd-186459218.eu-north-1.elb.amazonaws.com"
+            build-args: "NEXT_PUBLIC_API_URL=http://sharnom-api:3000"
     
     steps:
       - name: Checkout code

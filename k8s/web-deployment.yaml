@@ -23,7 +23,7 @@ spec:
           name: http
         env:
         - name: NEXT_PUBLIC_API_URL
-          value: "http://k8s-yellowbo-sharnomi-5041362fdd-186459218.eu-north-1.elb.amazonaws.com"
+          value: "http://sharnom-api:3000"
         - name: NODE_ENV
           value: "production"
         resources:
