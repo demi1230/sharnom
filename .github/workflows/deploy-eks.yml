@@ -1,0 +1,80 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || 'eu-north-1' }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region eu-north-1 --name ${{ secrets.EKS_CLUSTER_NAME || 'sharnom-cluster' }}
+
+      - name: Deploy Namespace
+        run: kubectl apply -f k8s/namespace.yaml
+
+      - name: Deploy API
+        run: |
+          kubectl apply -f k8s/api-deployment.yaml
+          kubectl rollout status deployment/sharnom-api -n yellowbooks --timeout=5m
+
+      - name: Run Migrations
+        run: |
+          kubectl delete job prisma-migration -n yellowbooks --ignore-not-found=true
+          kubectl apply -f k8s/migration-job.yaml
+          kubectl wait --for=condition=complete --timeout=5m job/prisma-migration -n yellowbooks || true
+
+      - name: Deploy Web
+        run: |
+          kubectl apply -f k8s/web-deployment.yaml
+          kubectl rollout status deployment/sharnom-web -n yellowbooks --timeout=5m
+
+      - name: Deploy HPA
+        run: kubectl apply -f k8s/hpa.yaml
+
+      - name: Deploy Ingress
+        run: kubectl apply -f k8s/ingress.yaml
+
+      - name: Get Deployment Status
+        run: |
+          echo "## 🚀 Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Pods" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get pods -n yellowbooks >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Services" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get svc -n yellowbooks >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Ingress" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get ingress -n yellowbooks >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### HPA" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get hpa -n yellowbooks >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

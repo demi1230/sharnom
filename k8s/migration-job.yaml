@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prisma-migration
+  namespace: yellowbooks
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: migration
+        image: 797583072626.dkr.ecr.eu-north-1.amazonaws.com/sharnom-api:latest
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          npx prisma migrate deploy --schema=apps/sharnom-api/prisma/schema.prisma
+          npx prisma db seed
+        env:
+        - name: DATABASE_URL
+          value: "file:/data/dev.db"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: sharnom-api-pvc
+  backoffLimit: 3

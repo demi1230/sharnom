@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sharnom-api-pvc
+  namespace: yellowbooks
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sharnom-api
+  namespace: yellowbooks
+  labels:
+    app: sharnom-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sharnom-api
+  template:
+    metadata:
+      labels:
+        app: sharnom-api
+    spec:
+      containers:
+      - name: sharnom-api
+        image: 797583072626.dkr.ecr.eu-north-1.amazonaws.com/sharnom-api:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          value: "file:/data/dev.db"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /yellow-books
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /yellow-books
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: sharnom-api-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sharnom-api
+  namespace: yellowbooks
+spec:
+  selector:
+    app: sharnom-api
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+  type: ClusterIP
