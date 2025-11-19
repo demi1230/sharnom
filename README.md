@@ -1,4 +1,4 @@
-# Sharnom - Mongolian Yellow Book Directory
+# Sharnom
 
 ![CI](https://github.com/demi1230/sharnom/actions/workflows/ci.yml/badge.svg)
 ![Docker](https://github.com/demi1230/sharnom/actions/workflows/docker.yml/badge.svg)
