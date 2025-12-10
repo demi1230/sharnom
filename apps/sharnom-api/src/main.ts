@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import { YellowBookEntrySchema } from '@sharnom/contracts';
+import { requireAdmin, AuthRequest } from './middleware/auth';
 
 const host = process.env.HOST ?? '0.0.0.0';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -44,12 +45,12 @@ app.get('/', (req, res) => {
   res.send({ message: 'Yellowbook API' });
 });
 
-// GET /yellow-books - List all entries (with optional search)
+// GET /yellow-books 
 app.get('/yellow-books', async (req, res) => {
   try {
     const search = req.query.search as string | undefined;
     
-    // Build where clause for search (SQLite case-insensitive via LIKE)
+    // Build where clause for search
     const whereClause = search
       ? {
           OR: [
@@ -165,6 +166,69 @@ app.post('/yellow-books', async (req, res) => {
     return res.status(201).json(entry);
   } catch (error) {
     console.error('Error creating yellow book entry:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ============================================
+// ADMIN ROUTES (Protected with role guard)
+// ============================================
+
+// GET /admin/users - List all users (admin only)
+app.get('/admin/users', ...requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+    return res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PATCH /admin/users/:id/role - Update user role (admin only)
+app.patch('/admin/users/:id/role', ...requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role. Must be "user" or "admin"' });
+    }
+    
+    const user = await prisma.user.update({
+      where: { id },
+      data: { role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+      },
+    });
+    
+    return res.json(user);
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /admin/yellow-books/:id - Delete entry (admin only)
+app.delete('/admin/yellow-books/:id', ...requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.yellowBookEntry.delete({ where: { id } });
+    return res.json({ message: 'Entry deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting entry:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });

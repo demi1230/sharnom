@@ -115,9 +115,20 @@
       }
     }
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
     "@prisma/client": "^6.17.1",
     "express": "^4.21.2",
+    "next-auth": "^5.0.0-beta.30",
     "prisma": "^6.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

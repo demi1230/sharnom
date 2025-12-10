@@ -114,3 +114,5 @@ Place them in the root directory or create a `docs/` folder.
 - Clear cache between runs for accurate results
 - Make sure both API and Web servers are running
 - Use "Desktop" mode for consistent results
+
+![alt text](image.png)

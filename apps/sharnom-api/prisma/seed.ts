@@ -1,9 +1,23 @@
-import { PrismaClient } from '../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Clean up existing data
   await prisma.yellowBookEntry.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Create admin user
+  const adminUser = await prisma.user.create({
+    data: {
+      email: 'admin@sharnom.com',
+      name: 'Admin User',
+      role: 'admin',
+      githubId: null, // Can be updated when they sign in with GitHub
+    },
+  });
+
+  console.log('✅ Admin user created:', adminUser.email);
 
   const entries = [
     {
