@@ -1,4 +1,4 @@
-# Sharnom - Mongolian Yellow Book Directory
+# Sharnom
 
 ![CI](https://github.com/demi1230/sharnom/actions/workflows/ci.yml/badge.svg)
 ![Docker](https://github.com/demi1230/sharnom/actions/workflows/docker.yml/badge.svg)
@@ -25,7 +25,7 @@ sharnom/
 - **Contracts**: Zod schemas for validation & type inference
 - **CI/CD**: GitHub Actions
 
-### Key Design Decisions
+### Key Design
 
 1. **Shared Contracts Library** (`libs/contracts`)
    - Single source of truth for data models
@@ -81,7 +81,7 @@ npx prisma db seed
 
 ### Development
 
-**Option 1 - Docker (Recommended for production-like environment):**
+**Option 1 - Docker:**
 ```bash
 # Build and run with Docker Compose
 docker-compose up --build
@@ -127,11 +127,6 @@ docker run -p 4200:4200 -e NEXT_PUBLIC_API_URL=http://localhost:3000 sharnom-web
 
 ### Testing & Linting
 ```bash
-# Run all tests
-npx nx run-many -t test
-
-# Run all linting
-npx nx run-many -t lint
 
 # Build all projects
 npx nx run-many -t build
@@ -160,7 +155,6 @@ npx nx run-many -t typecheck
   - Responsive design with TailwindCSS
   - OpenStreetMap integration
   - Skeleton loading states
-  - Mongolian UI text
 
 ### Contracts (`libs/contracts`)
 ```typescript
@@ -181,10 +175,8 @@ export type YellowBookEntry = z.infer<typeof YellowBookEntrySchema>;
 
 ## 🎨 UI Design
 
-Based on Mongolian business directory mockups:
-- Clean gradient backgrounds (white → orange-50)
+- Clean gradient backgrounds
 - Prominent search bar on homepage
-- Circular company logos
 - Two-column detail layout (info + map)
 - Sticky header with help/feedback buttons
 - Footer with contact info
@@ -272,4 +264,4 @@ See `perf.md` for detailed metrics:
 
 ## 📝 License
 
-Private educational project.
+Demis web advanced class's project.
