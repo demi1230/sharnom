@@ -1,6 +1,7 @@
 import { auth, signOut } from '../../lib/auth';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
+import Link from 'next/link';
 
 const prisma = new PrismaClient();
 
@@ -18,36 +19,38 @@ async function AdminUsersTable() {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Name</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Email</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Role</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Joined</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="border-t hover:bg-gray-50">
-              <td className="px-4 py-3 text-sm text-gray-900">{user.name || 'N/A'}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
-              <td className="px-4 py-3">
-                <span className={`px-2 py-1 text-xs font-medium rounded ${
-                  user.role === 'admin' 
-                    ? 'bg-purple-100 text-purple-800' 
-                    : 'bg-gray-100 text-gray-800'
-                }`}>
-                  {user.role}
-                </span>
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-500">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </td>
+      <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow overflow-hidden">
+        <table className="min-w-full">
+          <thead className="bg-gradient-to-r from-orange-50 to-blue-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Name</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Email</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Role</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Joined</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
+                <td className="px-4 py-3 text-sm text-gray-900 font-medium">{user.name || 'N/A'}</td>
+                <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
+                <td className="px-4 py-3">
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    user.role === 'admin' 
+                      ? 'bg-orange-100 text-orange-800' 
+                      : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {user.role}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-500">
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -67,28 +70,30 @@ async function AdminCompaniesTable() {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Name</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Category</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Phone</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Rating</th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map((company) => (
-            <tr key={company.id} className="border-t hover:bg-gray-50">
-              <td className="px-4 py-3 text-sm font-medium text-gray-900">{company.name}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{company.category}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{company.phone}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">
-                ⭐ {company.rating?.toFixed(1) || 'N/A'}
-              </td>
+      <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow overflow-hidden">
+        <table className="min-w-full">
+          <thead className="bg-gradient-to-r from-orange-50 to-blue-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Name</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Category</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Phone</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">Rating</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {companies.map((company) => (
+              <tr key={company.id} className="border-t border-gray-100 hover:bg-blue-50 transition-colors">
+                <td className="px-4 py-3 text-sm font-medium text-gray-900">{company.name}</td>
+                <td className="px-4 py-3 text-sm text-gray-600">{company.category}</td>
+                <td className="px-4 py-3 text-sm text-gray-600">{company.phone}</td>
+                <td className="px-4 py-3 text-sm text-gray-600">
+                  ⭐ {company.rating?.toFixed(1) || 'N/A'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -105,18 +110,18 @@ export default async function AdminPage() {
   
   if (userRole !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 to-white">
+        <div className="max-w-md w-full bg-white shadow-xl rounded-2xl p-8">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
           <p className="text-gray-700 mb-6">
             You do not have permission to access this admin page.
           </p>
-          <a 
+          <Link 
             href="/" 
-            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="inline-block bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition shadow-sm hover:shadow-md"
           >
             Go Home
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -131,7 +136,7 @@ export default async function AdminPage() {
   const [totalUsers, totalCompanies, totalAdmins] = stats;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white py-8">
       <div className="container mx-auto px-6">
         <div className="mb-8 flex justify-between items-center">
           <div>
@@ -148,7 +153,7 @@ export default async function AdminPage() {
           }}>
             <button 
               type="submit"
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition shadow-sm hover:shadow-md"
             >
               Sign Out
             </button>
@@ -157,7 +162,7 @@ export default async function AdminPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Total Users</p>
@@ -171,21 +176,21 @@ export default async function AdminPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Companies</p>
                 <p className="text-3xl font-bold text-gray-900">{totalCompanies}</p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-orange-100 rounded-full p-3">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm">Admins</p>
@@ -201,8 +206,8 @@ export default async function AdminPage() {
         </div>
 
         {/* Users Section */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
+        <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow mb-8 overflow-hidden">
+          <div className="px-6 py-4 bg-gradient-to-r from-orange-50 to-blue-50">
             <h2 className="text-xl font-semibold text-gray-900">User Management</h2>
             <p className="text-sm text-gray-600 mt-1">All registered users</p>
           </div>
@@ -212,8 +217,8 @@ export default async function AdminPage() {
         </div>
 
         {/* Companies Section */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
+        <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow overflow-hidden">
+          <div className="px-6 py-4 bg-gradient-to-r from-orange-50 to-blue-50">
             <h2 className="text-xl font-semibold text-gray-900">Companies</h2>
             <p className="text-sm text-gray-600 mt-1">Recent yellow book entries</p>
           </div>

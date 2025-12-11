@@ -17,7 +17,7 @@ export default function RootLayout({
         <header className="sticky top-0 z-20 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-orange-100">
           <div className="container mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/" className="select-none">
-              <span className="text-2xl md:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.15)]">
+              <span className="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.15)]">
                 Yellowbook
               </span>
             </Link>

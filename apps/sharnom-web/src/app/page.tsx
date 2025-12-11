@@ -56,7 +56,7 @@ export default async function Index() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative">
+      <section className="relative bg-gradient-to-b from-orange-50 to-white">
         <div className="container mx-auto px-6 py-20 text-center">
           <h1 className="mx-auto max-w-4xl text-3xl md:text-[40px] leading-snug font-extrabold tracking-tight text-gray-800 drop-shadow-[0_3px_0_rgba(0,0,0,0.2)]">
             Ямар нэгэн компанийн талаар мэдээлээр байна уу? тэгвэл шууд хай
@@ -94,6 +94,17 @@ export default async function Index() {
           </Suspense>
         </div>
       </section>
+
+      {/* Floating AI Assistant Button */}
+      <Link 
+        href="/yellow-books/assistant"
+        className="fixed bottom-20 right-8 z-50 group"
+        title="AI Туслах"
+      >
+        <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 hover:scale-110 transition-all duration-300">
+          <span className="text-3xl">🤖</span>
+        </div>
+      </Link>
     </main>
   );
 }
