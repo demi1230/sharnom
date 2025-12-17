@@ -97,7 +97,8 @@
         ],
         "options": {
           "buildTarget": "@sharnom/sharnom-api:build",
-          "runBuildTargetDependencies": false
+          "runBuildTargetDependencies": false,
+          "tsConfig": "apps/sharnom-api/tsconfig.app.json"
         },
         "configurations": {
           "development": {

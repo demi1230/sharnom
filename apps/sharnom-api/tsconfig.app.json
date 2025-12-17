@@ -6,6 +6,8 @@
     "types": ["node"],
     "rootDir": "src",
     "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
@@ -18,7 +20,9 @@
     "src/generated/**/*",
     "eslint.config.js",
     "eslint.config.cjs",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "../sharnom-web/**/*",
+    "**/*.tsx" 
   ],
   "references": [
     {

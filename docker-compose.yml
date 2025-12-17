@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - sharnom-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: .
@@ -10,8 +22,15 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - GOOGLE_API_KEY=AIzaSyBoUohRFaYh_BBkvgmQzA1HdmM5Z3kfP7Y
+      - REDIS_URL=redis://redis:6379
+      - AUTH_SECRET=Ix+pwgJHC5lvVeNEv2Is7bQwID3De01CI/giv/FH1Ko=
     volumes:
       - api-data:/app/prisma
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
       interval: 30s
